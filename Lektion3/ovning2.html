@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<style>
+    .hidden {
+        display: none;
+    }
+</style>
+
+<body>
+
+    <form id="form">
+        <label for="username">USERNAME</label>
+        <input type="text" name="username" id="username">
+        <label for="password">PASSWORD</label>
+        <input type="password" name="password" id="password">
+        <input type="submit" value="submit">
+        <strong id="fel" class="hidden">Something wrong</strong>
+    </form>
+
+    <div id="meddelande" class="hidden">
+        <h1>Welcome</h1>
+        <button id="lookmsg">Look</button>
+        <ul id="msglist"></ul>
+    </div>
+
+    <script type="application/javascript">
+        const formElement = document.getElementById('form');
+        const msg = document.getElementById('meddelande');
+        const felmsg = document.getElementById('fel');
+        const getmsg = document.getElementById('lookmsg');
+        const msgList = document.getElementById('msglist');
+
+        formElement.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const formData = new FormData(formElement);
+
+            fetch('api2.php', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw Error(response.statusText);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    formElement.classList.add('hidden');
+                    msg.classList.remove('hidden');
+
+                })
+                .catch(error => {
+                    felmsg.classList.remove('hidden');
+                })
+
+
+        });
+        getmsg.addEventListener('click', () => {
+            fetch('api2.php?messages')
+                .then(response => response.json())
+                .then(data => {
+                    data.messages.forEach(message => {
+                        const li = document.createElement('li');
+                        li.textContent = message;
+                        msgList.appendChild(li);
+                    });
+                });
+        });
+
+
+
+
+    </script>
+
+</body>
+
+</html>
